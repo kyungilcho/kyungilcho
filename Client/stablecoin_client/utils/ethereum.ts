@@ -206,13 +206,26 @@ const checkValidationofEthereumAddress = (value: string) => {
     return false;
 }
 
+/* get latest block number */
+
+const getLatestBlockNumber = async () => {
+    try {
+        const blockNumber = await web3.eth.getBlockNumber();
+        return blockNumber;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
 
 
 // export all functions as good.method 
 const Eth = {
     checkValidationofEthereumAddress,
     getBalanceofToken,
-    getEtherBalance
+    getEtherBalance,
+    getLatestBlockNumber,
 }
 
 export default Eth;

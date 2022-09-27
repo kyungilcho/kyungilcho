@@ -34,6 +34,8 @@ export function Input(props: { label: string, placeholder?: string, disabled?: b
                 disabled={props.disabled}
                 onChange={(e) => {
                     if (props.onChange) {
+                        console.log(e.target.value);
+                        
                         props.onChange(e.target.value);
                     }
                     if (props.validate) {
@@ -123,13 +125,18 @@ export function Panel(props: { title: string, children?: React.ReactNode }) {
 // button component with a text 
 // which changes the color of the button when hovered
 
-export function Button2(props: { text: string }) {
+export function Button2(props: { 
+    text: string, 
+    value?: string,
+    onClick?: (value: string) => void | Promise<void> 
+}) {
     return <button style={{
         backgroundColor: "rgba(255,255,255,0.2)",
         backdropFilter: "blur(20px)",
         borderRadius: "20px",
         boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
         border: "1px solid rgba(255, 255, 255, 0.18)",
+        height: "50%",
         margin: "10px",
         padding: "10px",
         display: "flex",
@@ -139,11 +146,17 @@ export function Button2(props: { text: string }) {
         transition: "all 0.3s ease-in-out",
     }} onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
         const target = e.target as HTMLButtonElement;
-        target.style.backgroundColor = "rgba(255,0,0,0.5)";
+        target.style.backgroundColor = "rgba(100,100,100,0.6)";
     }} onMouseLeave={(e) => {
         const target = e.target as HTMLButtonElement;
         target.style.backgroundColor = "rgba(255,255,255,0.2)";
     }}
+        onClick={async () => {
+            
+            if (props.onClick && props.value) {
+                await props.onClick(props.value);
+            }
+        }}
     >{props.text}</button>
 }
 
@@ -155,7 +168,7 @@ export function Container(
         children?: React.ReactNode
     }) {
 
-    const flexDirection = props.flexDirection ? props.flexDirection : "row";
+    const flexDirection = props.flexDirection;
 
     return <div style={{
         width: "100%",
@@ -168,7 +181,7 @@ export function Container(
         margin: "10px",
         padding: "10px",
         display: "flex",
-        flexDirection: flexDirection,
+        flexDirection: flexDirection ? flexDirection : "row",
         justifyContent: "center",
         alignItems: "center",
         transition: "all 0.3s ease-in-out",
