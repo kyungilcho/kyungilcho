@@ -10,6 +10,7 @@ export const useBalance = (address: string, type?: string) => {
         const getBalance = async () => {
             if (Eth.checkValidationofEthereumAddress(address)) {
                 if (type === 'token') {
+                    console.log('token');
                     const balance = parseInt(await Eth.getBalanceofToken(address) || '0');
                     setBalance(balance);
                 } else if (type === 'ether') {

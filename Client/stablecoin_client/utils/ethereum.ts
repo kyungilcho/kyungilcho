@@ -1,177 +1,16 @@
 import Web3 from 'web3';
+import { abi } from './constant/TokenABI';
+import { Transaction } from 'ethereumjs-tx';
 
-const contractAddress = "0x8acbD743E6AdAaEd96202F6BCcCa529c8925E520";
+const contractAddress = "0xF51e9858d337eaE60DA032737b28442ef052fc2a";
 const web3 = new Web3("https://ropsten.infura.io/v3/6d0db331b03946feb41e4bfad99423c4");
+
 
 
 // function receives an ethereum address and returns balance of the address in the coin smart contract
 
 const getBalanceofToken = async (address: string) => {
 
-    const abi = [
-        {
-            "constant": true,
-            "inputs": [],
-            "name": "totalSupply",
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "constant": true,
-            "inputs": [
-                {
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "name": "balances",
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "constant": true,
-            "inputs": [],
-            "name": "maximumFee",
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "constant": true,
-            "inputs": [],
-            "name": "_totalSupply",
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "constant": true,
-            "inputs": [
-                {
-                    "name": "_owner",
-                    "type": "address"
-                }
-            ],
-            "name": "balanceOf",
-            "outputs": [
-                {
-                    "name": "balance",
-                    "type": "uint256"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "constant": true,
-            "inputs": [],
-            "name": "owner",
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "constant": false,
-            "inputs": [
-                {
-                    "name": "_to",
-                    "type": "address"
-                },
-                {
-                    "name": "_value",
-                    "type": "uint256"
-                }
-            ],
-            "name": "transfer",
-            "outputs": [],
-            "payable": false,
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "constant": true,
-            "inputs": [],
-            "name": "basisPointsRate",
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "constant": false,
-            "inputs": [
-                {
-                    "name": "newOwner",
-                    "type": "address"
-                }
-            ],
-            "name": "transferOwnership",
-            "outputs": [],
-            "payable": false,
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": true,
-                    "name": "from",
-                    "type": "address"
-                },
-                {
-                    "indexed": true,
-                    "name": "to",
-                    "type": "address"
-                },
-                {
-                    "indexed": false,
-                    "name": "value",
-                    "type": "uint256"
-                }
-            ],
-            "name": "Transfer",
-            "type": "event"
-        }
-    ];
 
     try {
         const contract = new web3.eth.Contract(abi, contractAddress);
@@ -185,13 +24,10 @@ const getBalanceofToken = async (address: string) => {
 //get Ether balance of an address
 
 const getEtherBalance = async (address: string) => {
-    console.log('getEtherBalance');
-    console.log(address);
 
 
     try {
         const balance = await web3.eth.getBalance(address);
-        console.log(balance);
         return web3.utils.fromWei(balance, 'ether');
     }
     catch (err) {
@@ -205,13 +41,157 @@ const checkValidationofEthereumAddress = (value: string) => {
     }
     return false;
 }
+/*
+get transaction count of an address
+*/
+const getTransactionCount = async (address: string) => {
+    try {
+        const count = await web3.eth.getTransactionCount(address);
+        return web3.utils.toHex(count);;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+/* 
+get estimated gas price
+*/
+
+const getEstimatedGasPrice = async () => {
+    try {
+        const gasPrice = await web3.eth.getGasPrice();
+        return web3.utils.toHex(gasPrice);
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+/* 
+get estimated gas limit
+*/
+
+const getEstimatedGasLimit = async (
+    senderAddress: string,
+    receiverAddress: string,
+    amount: number,
+    data: string) => {
+    try {
+        const gasLimit = await web3.eth.estimateGas({
+            from: senderAddress,
+            to: receiverAddress,
+            value: amount,
+            data: data
+        });
+
+        return web3.utils.toHex(gasLimit);
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+/*
+create a new transaction Object and return it
+transaction data is the data of the transaction
+*/
+
+const createTransactionObject = async (
+    senderAddress: string,
+    receiverAddress: string,
+    amount: number,
+    data: string,
+) => {
+    const txObject = {
+        from: senderAddress,
+        nonce: await getTransactionCount(senderAddress),
+        gasLimit: await getEstimatedGasLimit(senderAddress, receiverAddress, amount, data),
+        gasPrice: await getEstimatedGasPrice(),
+        to: receiverAddress,
+        value: web3.utils.toHex(web3.utils.toWei(amount.toString(), 'ether')),
+        data: data
+    }
+    return txObject;
+}
+
+/* 
+create signed raw transaction and return it,
+private key input is not starting with 0x. Thus, we need to add 0x to the private key
+*/
+
+const createSignedRawTransaction = async (
+    senderAddress: string,
+    receiverAddress: string,
+    amount: number,
+    privateKey: string,
+    data: string
+) => {
+    try {
+        const txObject = await createTransactionObject(senderAddress, receiverAddress, amount, data);
+        const tx = new Transaction(txObject, { chain: 'ropsten' });
+
+        const privateKeyBuffer = Buffer.from(privateKey, 'hex');
+        tx.sign(privateKeyBuffer);
+        const serializedTx = tx.serialize();
+        const raw = '0x' + serializedTx.toString('hex');
+        return raw;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+/* send Token from sender to receiver. 
+function receives sender address, receiver address, amount of token to be sent, and private key of a client as parameters 
+network setter common is created from ethereumcommonjs
+use sendSignedTransaction method
+txData should be made with encodeABI data */
+
+const sendToken = async (senderAddress: string, receiverAddress: string, amount: number, privateKey: string) => {
+    try {
+        const contract = new web3.eth.Contract(abi, contractAddress);
+        console.log("amount", amount);
+
+        const txData = contract.methods.transfer(receiverAddress, amount).encodeABI();
+
+        const raw = await createSignedRawTransaction(senderAddress, contractAddress, 0, privateKey, txData);
+        const receipt = await web3.eth.sendSignedTransaction(raw)
+            .on('transactionHash', (hash: any) => {
+                console.log('hash', hash);
+            })
+            .on('receipt', (receipt: any) => {
+                console.log('receipt', receipt);
+            })
+            .on('confirmation', (confirmationNumber: any, receipt: any) => {
+                console.log('confirmation: ' + confirmationNumber);
+            })
+        return receipt;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
 
 /* get latest block number */
 
 const getLatestBlockNumber = async () => {
     try {
-        const blockNumber = await web3.eth.getBlockNumber();
+        const blockNumber = await web3.eth.getBlockNumber() || 0;
         return blockNumber;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+/* get block details */
+
+const getBlockDetails = async (blockNumber: number) => {
+    try {
+        const block = await web3.eth.getBlock(blockNumber);
+        return block;
     }
     catch (err) {
         console.log(err);
@@ -222,10 +202,12 @@ const getLatestBlockNumber = async () => {
 
 // export all functions as good.method 
 const Eth = {
-    checkValidationofEthereumAddress,
     getBalanceofToken,
     getEtherBalance,
+    checkValidationofEthereumAddress,
+    sendToken,
     getLatestBlockNumber,
+    getBlockDetails
 }
 
 export default Eth;

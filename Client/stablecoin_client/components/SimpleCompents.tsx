@@ -6,7 +6,7 @@
 // which can create an event when clicked and can be disabled or not 
 // which receives a function as a prop and can be called when clicked
 
-import React from "react";
+import React, { SetStateAction } from "react";
 
 export function Button(
     props: {
@@ -26,7 +26,7 @@ export function Button(
 // which can be used to get a value from the user
 // which can be used to check the validation of the input and change the color of the input 
 
-export function Input(props: { label: string, placeholder?: string, disabled?: boolean, onChange?: (value: string) => void, validate?: (value: string) => boolean }) {
+export function Input(props: { label: string, placeholder?: string, disabled?: boolean, onChange?: ((value: string) => void) | (React.Dispatch<SetStateAction<any>>), validate?: (value: string) => boolean }) {
     return <div>
         <label >{props.label} <br />
             <input
@@ -35,7 +35,7 @@ export function Input(props: { label: string, placeholder?: string, disabled?: b
                 onChange={(e) => {
                     if (props.onChange) {
                         console.log(e.target.value);
-                        
+
                         props.onChange(e.target.value);
                     }
                     if (props.validate) {
@@ -125,10 +125,10 @@ export function Panel(props: { title: string, children?: React.ReactNode }) {
 // button component with a text 
 // which changes the color of the button when hovered
 
-export function Button2(props: { 
-    text: string, 
+export function Button2(props: {
+    text: string,
     value?: string,
-    onClick?: (value: string) => void | Promise<void> 
+    onClick?: (value: string | number) => void | Promise<void>
 }) {
     return <button style={{
         backgroundColor: "rgba(255,255,255,0.2)",
@@ -152,7 +152,7 @@ export function Button2(props: {
         target.style.backgroundColor = "rgba(255,255,255,0.2)";
     }}
         onClick={async () => {
-            
+
             if (props.onClick && props.value) {
                 await props.onClick(props.value);
             }
