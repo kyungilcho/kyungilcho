@@ -22,7 +22,7 @@ const Home: NextPage<{ ethBalance: number, InitialBlockNumber: number }> = ({ et
         <h2>{`ether: ${EthBalance ? EthBalance.toFixed(5) : 0}`}</h2>
         <h2>{`token: ${tokenBalance ? tokenBalance : 0}`}</h2>
         <Button2 text="token balance check" value='good' onClick={() => {
-          console.log(dispatchToken());
+          console.log();
 
         }} />
       </Box>
@@ -59,7 +59,7 @@ const Home: NextPage<{ ethBalance: number, InitialBlockNumber: number }> = ({ et
       const interval = setInterval(async () => {
         const blockNumber = await Eth.getLatestBlockNumber();
         setBlockNumber(blockNumber ? blockNumber : 0);
-      }, 1000);
+      }, 10000);
       return () => clearInterval(interval);
     }, [])
 
@@ -70,40 +70,75 @@ const Home: NextPage<{ ethBalance: number, InitialBlockNumber: number }> = ({ et
     )
   }
 
+/*
+
+const TransactionHistoryBox = () => {
+  const [transactionHistory, setTransactionHistory] = React.useState([]);
+  const [address, setAddress] = React.useState(stringArrary[0]);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const transactionHistory = await Eth.getTransactionHistory(address);
+      setTransactionHistory(transactionHistory);
+    }, 100000);
+    return () => clearInterval(interval);
+  }, [address]);
+
   return (
-    <div className={styles.container}>
-      <Container flexDirection='row'>
-        <Container flexDirection='column' >
-          <UserInfoBox />
-          <SendTokenBox />
-          <BlockChainInfoBox />
-        </Container>
-        <Container>
-          <Box title='Send Ether' />
-          <Button2 text='test' />
-        </Container>
+    <Box title='Transaction History'>
+      <Dropdown options={stringArrary} onChange={setAddress} />
+      <Container flexDirection='column'>
+        {transactionHistory.map((transaction, index) => {
+          return (
+            <Container key={index} flexDirection='row'>
+              <h2>{`from: ${transaction.from}`}</h2>
+              <h2>{`to: ${transaction.to}`}</h2>
+              <h2>{`value: ${transaction.value}`}</h2>
+            </Container>
+          )
+        }
+        )}
       </Container>
-    </div>
+    </Box>
   )
+
+}
+
+return (
+  <div className={styles.container}>
+    <Container flexDirection='row'>
+      <Container flexDirection='column' >
+        <UserInfoBox />
+        <SendTokenBox />
+        <BlockChainInfoBox />
+      </Container>
+      <Container>
+        <Box title='Send Ether' />
+        <Button2 text='test' />
+        <TransactionHistoryBox />
+      </Container>
+    </Container>
+  </div>
+)
 }
 
 export const getStaticProps = async () => {
 
-  const data = await Axios.get(
-    'https://61051a8a-215d-4d2c-8cc9-002b7e59b03e.mock.pstmn.io'
-  );
+const data = await Axios.get(
+  'https://61051a8a-215d-4d2c-8cc9-002b7e59b03e.mock.pstmn.io'
+);
 
-  const ethBalance = await Eth.getEtherBalance(stringArrary[0]);
-  const tokenBalance = await Eth.getBalanceofToken(stringArrary[0]);
-  const blockNumber = await Eth.getLatestBlockNumber();
+const ethBalance = await Eth.getEtherBalance(stringArrary[0]);
+const tokenBalance = await Eth.getBalanceofToken(stringArrary[0]);
+const blockNumber = await Eth.getLatestBlockNumber();
 
-  return {
-    props: {
-      ethBalance: ethBalance ? parseFloat(ethBalance).toFixed(5) : 0,
-      tokenBalance: tokenBalance ? tokenBalance : 0,
-      InitialBlockNumber: blockNumber,
-    },
-  };
+return {
+  props: {
+    ethBalance: ethBalance ? parseFloat(ethBalance).toFixed(5) : 0,
+    tokenBalance: tokenBalance ? tokenBalance : 0,
+    InitialBlockNumber: blockNumber,
+  },
+};
 };
 
 export default Home

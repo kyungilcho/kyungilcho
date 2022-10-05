@@ -198,6 +198,32 @@ const getBlockDetails = async (blockNumber: number) => {
     }
 }
 
+/* 
+get transaction history of an address 
+but only about token transfer transactions of certain smart contract
+but only 100 transactions are returned
+use Promise.all to get all transactions
+*/
+
+const getTransactionHistory = async (address: string) => {
+    try {
+        const blockNumber = await getLatestBlockNumber();
+        const block = await getBlockDetails(blockNumber);
+        console.log(block);
+
+        const transactionHashes = block.transactions;
+        const transactionPromises = transactionHashes.map((hash: any) => web3.eth.getTransaction(hash));
+        const transactions = await Promise.all(transactionPromises);
+        console.log(transactions);
+
+        const tokenTransactions = transactions.filter((transaction: any) => transaction.to === contractAddress);
+        return tokenTransactions;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
 
 
 // export all functions as good.method 
@@ -207,7 +233,10 @@ const Eth = {
     checkValidationofEthereumAddress,
     sendToken,
     getLatestBlockNumber,
-    getBlockDetails
+    getBlockDetails,
+    getTransactionHistory
 }
 
 export default Eth;
+
+
