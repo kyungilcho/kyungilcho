@@ -215,3 +215,33 @@ export function Container2(props: { title: string, children?: React.ReactNode })
         {props.children}
     </div>
 }
+
+// container component with a title and several children
+// which should be displayed in a row
+// which can be scrolled vertically 
+
+export function ScrollContainer(
+    props: { 
+        flexDirection?: string,        
+        children?: React.ReactNode 
+    }) {
+    return <div style={{
+        width: "800px",
+        height: "500px",
+        backgroundColor: "rgba(255,255,255,0.2)",
+        backdropFilter: "blur(20px)",
+        borderRadius: "20px",
+        boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
+        border: "1px solid rgba(255, 255, 255, 0.18)",
+        margin: "10px",
+        padding: "10px",
+        display: "flex",
+        flexDirection: props.flexDirection? props.flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        overflowY: "scroll",
+        transition: "all 0.3s ease-in-out",
+    }} className="container">
+        {props.children}
+    </div>
+}

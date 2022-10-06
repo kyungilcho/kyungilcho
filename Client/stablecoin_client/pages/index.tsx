@@ -1,18 +1,24 @@
 import type { NextPage } from 'next'
 import styles from '../styles/Home.module.css';
-import { Box, Button, Button2, Dropdown, Panel, Container, Input } from '../components/SimpleCompents';
+import { Box, Button, Button2, Dropdown, Panel, Container, Input, ScrollContainer } from '../components/SimpleCompents';
 import Axios from 'axios';
 import React, { useEffect } from 'react';
 import Eth from '../utils/ethereum';
 import { useBalance } from '../utils/hooks/EthereumHooks';
-import { string } from 'prop-types';
 
 const stringArrary = ['0x50bD41A6b4AF4ba8ED78f09912F363D26fd7d57C', '0x1eD14542bFDE8d84D82dfA8B43EC12d2c510361C', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-const privateKey = "91e3edbed9f7f6dd154543920ee3b7e93ad3e964e18f1086156789c759575461"
-const Home: NextPage<{ ethBalance: number, InitialBlockNumber: number }> = ({ ethBalance, InitialBlockNumber }) => {
+const privateKey = "91e3edbed9f7f6dd154543920ee3b7e93ad3e964e18f1086156789c759575461";
+
+const Home: NextPage<{ 
+  ethBalance: number, 
+  InitialBlockNumber: number 
+}> = ({ 
+  ethBalance, 
+  InitialBlockNumber 
+}): JSX.Element => {
+  const [address, setAddress] = React.useState(stringArrary[0]);
 
   const UserInfoBox = () => {
-    const [address, setAddress] = React.useState(stringArrary[0]);
     const [EthBalance, dispatch] = useBalance(address, "ether");
     const [tokenBalance, dispatchToken] = useBalance(address, "token");
 
@@ -70,76 +76,71 @@ const Home: NextPage<{ ethBalance: number, InitialBlockNumber: number }> = ({ et
     )
   }
 
-/*
+  
+  const TransactionHistoryBox = ({address}) => {
+    const [transactionHistory, setTransactionHistory] = React.useState([{returnValues: {from: '', to: '', value: 0}}]);
 
-const TransactionHistoryBox = () => {
-  const [transactionHistory, setTransactionHistory] = React.useState([]);
-  const [address, setAddress] = React.useState(stringArrary[0]);
+    useEffect(() => {
+      const interval = setInterval(async () => {
+        const transactionHistory = await Eth.getTransactionHistory(address);
+        setTransactionHistory(transactionHistory);
+      }, 10000);
+      return () => clearInterval(interval);
+    }, [address]);
 
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      const transactionHistory = await Eth.getTransactionHistory(address);
-      setTransactionHistory(transactionHistory);
-    }, 100000);
-    return () => clearInterval(interval);
-  }, [address]);
+    return (
+      <Box title='Transaction History'>
+        <Dropdown options={stringArrary} onChange={setAddress} />
+        <ScrollContainer flexDirection='column'>
+          {transactionHistory.map((transaction, index) => {
+            return (
+              <Container key={index} flexDirection='column'>
+                <h4>{`from: ${transaction.returnValues.from}`}</h4>
+                <h4>{`to: ${transaction.returnValues.to}`}</h4>
+                <h4>{`value: ${transaction.returnValues.value}`}</h4>
+              </Container>
+            )
+          }
+          )}
+        </ScrollContainer>
+      </Box>
+    )
+
+  }
 
   return (
-    <Box title='Transaction History'>
-      <Dropdown options={stringArrary} onChange={setAddress} />
-      <Container flexDirection='column'>
-        {transactionHistory.map((transaction, index) => {
-          return (
-            <Container key={index} flexDirection='row'>
-              <h2>{`from: ${transaction.from}`}</h2>
-              <h2>{`to: ${transaction.to}`}</h2>
-              <h2>{`value: ${transaction.value}`}</h2>
-            </Container>
-          )
-        }
-        )}
+    <div className={styles.container}>
+      <Container flexDirection='row'>
+        <Container flexDirection='column' >
+          <UserInfoBox />
+          <SendTokenBox />
+          <BlockChainInfoBox />
+        </Container>
+        <Container flexDirection='column'>
+          <Box title='Send Ether' />
+          <Button2 text='test' />
+          <TransactionHistoryBox address={address} />
+        </Container>
       </Container>
-    </Box>
+    </div>
   )
-
-}
-
-return (
-  <div className={styles.container}>
-    <Container flexDirection='row'>
-      <Container flexDirection='column' >
-        <UserInfoBox />
-        <SendTokenBox />
-        <BlockChainInfoBox />
-      </Container>
-      <Container>
-        <Box title='Send Ether' />
-        <Button2 text='test' />
-        <TransactionHistoryBox />
-      </Container>
-    </Container>
-  </div>
-)
 }
 
 export const getStaticProps = async () => {
 
-const data = await Axios.get(
-  'https://61051a8a-215d-4d2c-8cc9-002b7e59b03e.mock.pstmn.io'
-);
+  const ethBalance = await Eth.getEtherBalance(stringArrary[0]);
+  const tokenBalance = await Eth.getBalanceofToken(stringArrary[0]);
+  const blockNumber = await Eth.getLatestBlockNumber();
 
-const ethBalance = await Eth.getEtherBalance(stringArrary[0]);
-const tokenBalance = await Eth.getBalanceofToken(stringArrary[0]);
-const blockNumber = await Eth.getLatestBlockNumber();
-
-return {
-  props: {
-    ethBalance: ethBalance ? parseFloat(ethBalance).toFixed(5) : 0,
-    tokenBalance: tokenBalance ? tokenBalance : 0,
-    InitialBlockNumber: blockNumber,
-  },
-};
+  return {
+    props: {
+      ethBalance: ethBalance ? parseFloat(ethBalance).toFixed(5) : 0,
+      tokenBalance: tokenBalance ? tokenBalance : 0,
+      InitialBlockNumber: blockNumber,
+    },
+  };
 };
 
-export default Home
+export default Home;
+
 

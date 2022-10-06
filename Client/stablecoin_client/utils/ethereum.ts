@@ -1,9 +1,11 @@
 import Web3 from 'web3';
 import { abi } from './constant/TokenABI';
 import { Transaction } from 'ethereumjs-tx';
+import axios from 'axios';
+import { getData } from './API';
 
-const contractAddress = "0xF51e9858d337eaE60DA032737b28442ef052fc2a";
-const web3 = new Web3("https://ropsten.infura.io/v3/6d0db331b03946feb41e4bfad99423c4");
+const contractAddress = "0xDd9eB7952D6058Ee1eC4B194e6FEF08c824D6df0";
+const web3 = new Web3('https://goerli.infura.io/v3/6d0db331b03946feb41e4bfad99423c4');
 
 
 
@@ -207,17 +209,10 @@ use Promise.all to get all transactions
 
 const getTransactionHistory = async (address: string) => {
     try {
-        const blockNumber = await getLatestBlockNumber();
-        const block = await getBlockDetails(blockNumber);
-        console.log(block);
-
-        const transactionHashes = block.transactions;
-        const transactionPromises = transactionHashes.map((hash: any) => web3.eth.getTransaction(hash));
-        const transactions = await Promise.all(transactionPromises);
-        console.log(transactions);
-
-        const tokenTransactions = transactions.filter((transaction: any) => transaction.to === contractAddress);
-        return tokenTransactions;
+        console.log("hi")
+        const history = await getData('http://192.168.156.162:5555/transaction/history', "address", address);
+        console.log("history", history);
+        return history;
     }
     catch (err) {
         console.log(err);
