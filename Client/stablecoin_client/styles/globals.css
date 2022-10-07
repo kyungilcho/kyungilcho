@@ -6,6 +6,12 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
+body {
+  height: 100vh;
+  /* display: flex; */
+  /* flex-direction: column; */
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -42,4 +48,91 @@ Box {
     color: white;
     background: black;
   }
+}
+
+/*---------------------------------------*/
+
+header,
+footer {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0;
+}
+
+h1 {
+  margin-bottom: 1rem;
+}
+
+h4 {
+  margin: 0.8rem 0;
+}
+
+h4 + h4 {
+  margin-top: 1rem;
+}
+
+input {
+  padding: 0.2rem 0.5rem;
+  margin-top: 0.3rem;
+  margin-bottom: 1rem;
+}
+
+button {
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  /* margin: auto; */
+}
+
+.box {
+  position: relative;
+}
+.box__address {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.box__address select {
+  border: solid 1px transparent;
+  height: fit-content;
+  padding: 0.5rem;
+  margin-left: 1rem;
+}
+
+.box__info {
+  width: 100%;
+}
+
+.box__info button {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.box__send-token-input {
+  width: 100%;
+}
+.container.card {
+  border: solid 1px black;
+  border-radius: 8px;
+  padding: 0.6rem;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.container.scroll-box {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.container.container-box {
+  height: 75vh;
+}
+
+.container.left,
+.container.right {
+  height: 100%;
+  justify-content: space-between;
 }
