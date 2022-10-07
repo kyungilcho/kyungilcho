@@ -5,6 +5,7 @@ import Axios from 'axios';
 import React, { useEffect } from 'react';
 import Eth from '../utils/ethereum';
 import { useBalance } from '../utils/hooks/EthereumHooks';
+import { useGlobalDispatch, useGlobalState } from '../context';
 
 const stringArrary = ['0x50bD41A6b4AF4ba8ED78f09912F363D26fd7d57C', '0x1eD14542bFDE8d84D82dfA8B43EC12d2c510361C', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 const privateKey = "91e3edbed9f7f6dd154543920ee3b7e93ad3e964e18f1086156789c759575461";
@@ -16,6 +17,10 @@ const Home: NextPage<{
   ethBalance, 
   InitialBlockNumber 
 }): JSX.Element => {
+
+  const state = useGlobalState();
+  const dispatch = useGlobalDispatch();
+
   const [address, setAddress] = React.useState(stringArrary[0]);
 
   const UserInfoBox = () => {
@@ -77,7 +82,7 @@ const Home: NextPage<{
   }
 
   
-  const TransactionHistoryBox = ({address}) => {
+  const TransactionHistoryBox = () => {
     const [transactionHistory, setTransactionHistory] = React.useState([{returnValues: {from: '', to: '', value: 0}}]);
 
     useEffect(() => {

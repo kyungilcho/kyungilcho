@@ -8,7 +8,6 @@ const contractAddress = "0xDd9eB7952D6058Ee1eC4B194e6FEF08c824D6df0";
 const web3 = new Web3('https://goerli.infura.io/v3/6d0db331b03946feb41e4bfad99423c4');
 
 
-
 // function receives an ethereum address and returns balance of the address in the coin smart contract
 
 const getBalanceofToken = async (address: string) => {
@@ -164,6 +163,7 @@ const sendToken = async (senderAddress: string, receiverAddress: string, amount:
             })
             .on('receipt', (receipt: any) => {
                 console.log('receipt', receipt);
+
             })
             .on('confirmation', (confirmationNumber: any, receipt: any) => {
                 console.log('confirmation: ' + confirmationNumber);

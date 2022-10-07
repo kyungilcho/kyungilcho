@@ -185,6 +185,7 @@ export function Container(
         justifyContent: "center",
         alignItems: "center",
         transition: "all 0.3s ease-in-out",
+        alignSelf: "stretch",
     }} className="container">
         {props.children}
     </div>
