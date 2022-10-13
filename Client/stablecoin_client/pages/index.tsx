@@ -217,11 +217,21 @@ const Home: NextPage<{
     }, []);
 
     return (
-      <Box title="Admin">
+      <Box title="Admin" className="admin">
         <h4>Token Total Supply: {totalSupply}</h4>
         <Input label="mint amount" onChange={setMintAmount} />
-        <Button2 text="mint" onClick={onClick} value={mintAmount.toString()} />
-        <Button2 text="etes" onClick={onClick2} value={mintAmount.toString()} />
+        <div className="admin__button-container">
+          <Button2
+            text="mint"
+            onClick={onClick}
+            value={mintAmount.toString()}
+          />
+          <Button2
+            text="etes"
+            onClick={onClick2}
+            value={mintAmount.toString()}
+          />
+        </div>
         <Portal>
           <h4 className="admin-status">Transaction Status: {statusIcon}</h4>
         </Portal>
