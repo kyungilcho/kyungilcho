@@ -9,7 +9,7 @@ import {
   Container,
   Input,
   ScrollContainer,
-} from "../components/SimpleComponentsTest";
+} from "../components/SimpleComponents";
 import Axios from "axios";
 import React, { useEffect, useState } from "react";
 import Eth from "../utils/ethereum";
@@ -20,6 +20,8 @@ import { createPortal } from "react-dom";
 import { PortalProps } from "@mui/material";
 import { AiFillCheckCircle, AiFillMinusCircle } from "react-icons/ai";
 import { GiBackwardTime } from "react-icons/gi";
+import useIconChange from "../utils/hooks/useIconChange";
+import { Portal } from "../utils/Portal";
 
 const stringArrary = [
   "0x50bD41A6b4AF4ba8ED78f09912F363D26fd7d57C",
@@ -64,21 +66,6 @@ const privateKeyArray = [
   "91e3edbed9f7f6dd154543920ee3b7e93ad3e964e18f1086156789c759575461",
 ];
 
-function Portal(props: PortalProps) {
-  const { children } = props;
-  const [element, setElement] = useState<HTMLElement | null>(null);
-
-  useEffect(() => {
-    setElement(document.getElementById("__next"));
-  }, []);
-
-  if (!element) {
-    return <></>;
-  }
-
-  return createPortal(children, element);
-}
-
 const Home: NextPage<{
   ethBalance: number;
   InitialBlockNumber: number;
@@ -89,50 +76,7 @@ const Home: NextPage<{
   const [address, setAddress] = React.useState(stringArrary[0]);
   const [privateKey, setPrivateKey] = React.useState(privateKeyArray[0]);
 
-  const [statusIcon, setStatusIcon] = useState<React.ReactNode>("");
-
-  useEffect(() => {
-    switch (state.status) {
-      case "idle":
-        setStatusIcon(
-          <AiFillMinusCircle
-            style={{
-              width: "25px",
-              height: "25px",
-              marginLeft: "0.5em",
-              color: "#ffc400",
-            }}
-          />
-        );
-        break;
-      case "pending":
-        setStatusIcon(
-          <GiBackwardTime
-            style={{
-              width: "25px",
-              height: "25px",
-              marginLeft: "0.5em",
-              color: "grey",
-            }}
-          />
-        );
-        break;
-      case "success":
-        setStatusIcon(
-          <AiFillCheckCircle
-            style={{
-              width: "25px",
-              height: "25px",
-              marginLeft: "0.5em",
-              color: "green",
-            }}
-          />
-        );
-        break;
-      default:
-        break;
-    }
-  }, [state]);
+  const { statusIcon } = useIconChange(state.status);
 
   const UserInfoBox = () => {
     const [EthBalance, dispatch1] = useBalance(state.address, "ether");
@@ -278,7 +222,6 @@ const Home: NextPage<{
       <Box title="Admin">
         <h4>Token Total Supply: {totalSupply}</h4>
         <Input label="mint amount" onChange={setMintAmount} />
-
         <Button2 text="mint" onClick={onClick} value={mintAmount.toString()} />
         <Button2 text="etes" onClick={onClick2} value={mintAmount.toString()} />
         <Portal>

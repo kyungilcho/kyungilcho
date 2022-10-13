@@ -158,3 +158,30 @@ button {
   justify-content: center;
   align-items: center;
 }
+
+.admin-status .success,
+.admin-status .pending,
+.admin-status .idle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.admin-status .success svg {
+  width: 25px;
+  height: 25px;
+  margin-left: 0.5em;
+  color: green;
+}
+.admin-status .pending svg {
+  width: 25px;
+  height: 25px;
+  margin-left: 0.5em;
+  color: grey;
+}
+.admin-status .idle svg {
+  width: 25px;
+  height: 25px;
+  margin-left: 0.5em;
+  color: #ffc400;
+}
