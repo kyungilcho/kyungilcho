@@ -84,8 +84,12 @@ export function Dropdown(props: {
         if (props.onChange1 && props.onChange2) {
           props.onChange1(e.target.value);
           props.onChange2(e.target.value);
+<<<<<<< HEAD
         } else if (props.onChange1){
           console.log(e.target.value);
+=======
+        } else if (props.onChange1) {
+>>>>>>> a3b56a5bc1c3a1ff91dfb8cfac7296fc3344b08b
           props.onChange1(e.target.value);
         }
       }}
@@ -108,7 +112,11 @@ export function Dropdown(props: {
 // box component with a title and a body
 // glassmorphism style css
 
-export function Box(props: { title?: string; children?: React.ReactNode }) {
+export function Box(props: {
+  title?: string;
+  children?: React.ReactNode;
+  className?: string;
+}) {
   return (
     <div
       style={{
@@ -128,7 +136,7 @@ export function Box(props: { title?: string; children?: React.ReactNode }) {
         alignItems: "center",
         transition: "all 0.3s ease-in-out",
       }}
-      className="box"
+      className={`box ${props.className ? props.className : ""}`}
     >
       {props.title && <h1>{props.title}</h1>}
       {props.children}
@@ -155,7 +163,7 @@ export function Panel(props: { title: string; children?: React.ReactNode }) {
 export function Button2(props: {
   text: string;
   value?: string;
-  onClick?: (value?: string | number| null) => void | Promise<void>;
+  onClick?: (value?: string | number | null) => void | Promise<void>;
 }) {
   return (
     <button
