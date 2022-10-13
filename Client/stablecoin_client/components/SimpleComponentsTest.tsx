@@ -78,7 +78,7 @@ export function Dropdown(props: {
         if (props.onChange1 && props.onChange2) {
           props.onChange1(e.target.value);
           props.onChange2(e.target.value);
-        } else if (props.onChange1){
+        } else if (props.onChange1) {
           props.onChange1(e.target.value);
         }
       }}
@@ -144,11 +144,12 @@ export function Panel(props: { title: string; children?: React.ReactNode }) {
 export function Button2(props: {
   text: string;
   value?: string;
-  onClick?: (value?: string | number| null) => void | Promise<void>;
+  onClick?: (value?: string | number | null) => void | Promise<void>;
+  className?: string;
 }) {
   return (
     <button
-      className="send-token"
+      className={props.className ? props.className : "send-token"}
       onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
         const target = e.target as HTMLButtonElement;
         target.style.backgroundColor = "rgba(100,100,100,0.6)";
@@ -158,8 +159,11 @@ export function Button2(props: {
         target.style.backgroundColor = "rgba(255,255,255,0.2)";
       }}
       onClick={async () => {
-        if (props.onClick && props.value) {
-          await props.onClick(props.value);
+        if (props.onClick) {
+          if (props.value) {
+            await props.onClick(props.value);
+          }
+          props.onClick();
         }
       }}
     >
