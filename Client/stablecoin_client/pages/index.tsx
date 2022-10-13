@@ -10,12 +10,10 @@ import {
   Input,
   ScrollContainer,
 } from "../components/SimpleComponentsTest";
-import Axios from "axios";
 import React, { useEffect, useState } from "react";
 import Eth from "../utils/ethereum";
 import { useBalance } from "../utils/hooks/EthereumHooks";
 import { useGlobalDispatch, useGlobalState } from "../context";
-import { DispatchinApp } from "../utils/utils";
 import { createPortal } from "react-dom";
 import { PortalProps } from "@mui/material";
 import { AiFillCheckCircle, AiFillMinusCircle } from "react-icons/ai";
@@ -86,7 +84,6 @@ const Home: NextPage<{
   const state = useGlobalState();
   const dispatch = useGlobalDispatch();
 
-  const [address, setAddress] = React.useState(stringArrary[0]);
   const [privateKey, setPrivateKey] = React.useState(privateKeyArray[0]);
 
   const [statusIcon, setStatusIcon] = useState<React.ReactNode>("");
@@ -257,7 +254,7 @@ const Home: NextPage<{
     const [mintAmount, setMintAmount] = React.useState(0);
 
     const onClick = () => {
-      DispatchinApp(dispatch);
+      Eth.mintToken(state.address, mintAmount, privateKey, dispatch);
     };
 
     const onClick2 = () => {

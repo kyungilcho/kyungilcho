@@ -80,16 +80,12 @@ export function Dropdown(props: {
 
   return (
     <select
+      value={"Select a Address"}
       onChange={(e) => {
         if (props.onChange1 && props.onChange2) {
           props.onChange1(e.target.value);
           props.onChange2(e.target.value);
-<<<<<<< HEAD
         } else if (props.onChange1){
-          console.log(e.target.value);
-=======
-        } else if (props.onChange1) {
->>>>>>> a3b56a5bc1c3a1ff91dfb8cfac7296fc3344b08b
           props.onChange1(e.target.value);
         }
       }}
