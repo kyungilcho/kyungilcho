@@ -10,12 +10,14 @@ import {
   Input,
   ScrollContainer,
 } from "../components/SimpleComponentsTest";
-import Axios from "axios";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Eth from "../utils/ethereum";
 import { useBalance } from "../utils/hooks/EthereumHooks";
 import { useGlobalDispatch, useGlobalState } from "../context";
-import { DispatchinApp } from "../utils/utils";
+import { createPortal } from "react-dom";
+import { PortalProps } from "@mui/material";
+import { AiFillCheckCircle, AiFillMinusCircle } from "react-icons/ai";
+import { GiBackwardTime } from "react-icons/gi";
 
 const stringArrary = [
   "0x50bD41A6b4AF4ba8ED78f09912F363D26fd7d57C",
@@ -58,7 +60,22 @@ const stringArrary = [
 const privateKeyArray = [
   "8a9214c740bb26055a37789dc3ff31b13794b990f29822e0733e60c3fd2dde89",
   "91e3edbed9f7f6dd154543920ee3b7e93ad3e964e18f1086156789c759575461",
-]
+];
+
+function Portal(props: PortalProps) {
+  const { children } = props;
+  const [element, setElement] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    setElement(document.getElementById("__next"));
+  }, []);
+
+  if (!element) {
+    return <></>;
+  }
+
+  return createPortal(children, element);
+}
 
 const Home: NextPage<{
   ethBalance: number;
@@ -67,17 +84,61 @@ const Home: NextPage<{
   const state = useGlobalState();
   const dispatch = useGlobalDispatch();
 
-  const [address, setAddress] = React.useState(stringArrary[0]);
   const [privateKey, setPrivateKey] = React.useState(privateKeyArray[0]);
+
+  const [statusIcon, setStatusIcon] = useState<React.ReactNode>("");
+
+  useEffect(() => {
+    switch (state.status) {
+      case "idle":
+        setStatusIcon(
+          <AiFillMinusCircle
+            style={{
+              width: "25px",
+              height: "25px",
+              marginLeft: "0.5em",
+              color: "#ffc400",
+            }}
+          />
+        );
+        break;
+      case "pending":
+        setStatusIcon(
+          <GiBackwardTime
+            style={{
+              width: "25px",
+              height: "25px",
+              marginLeft: "0.5em",
+              color: "grey",
+            }}
+          />
+        );
+        break;
+      case "success":
+        setStatusIcon(
+          <AiFillCheckCircle
+            style={{
+              width: "25px",
+              height: "25px",
+              marginLeft: "0.5em",
+              color: "green",
+            }}
+          />
+        );
+        break;
+      default:
+        break;
+    }
+  }, [state]);
 
   const UserInfoBox = () => {
     const [EthBalance, dispatch1] = useBalance(state.address, "ether");
     const [tokenBalance, dispatchToken] = useBalance(state.address, "token");
 
     const addressChange = (value: any) => {
-      console.log('====================================');
+      console.log("====================================");
       console.log(value);
-      console.log('====================================');
+      console.log("====================================");
       dispatch({ type: "SET_ADDRESS", address: value });
     };
 
@@ -85,7 +146,7 @@ const Home: NextPage<{
       <Box>
         <div className="box__address">
           <h3>Address: {state.address}</h3>
-          <Dropdown options={stringArrary} onChange1={addressChange}  />
+          <Dropdown options={stringArrary} onChange1={addressChange} />
         </div>
         <div className="box__info">
           <h2>{`ether: ${EthBalance ? EthBalance.toFixed(5) : 0}`}</h2>
@@ -108,7 +169,13 @@ const Home: NextPage<{
     const [amount, setAmount] = React.useState(0);
 
     const clickChecker = async () => {
-      await Eth.sendToken(state.address, toAddress, amount, privateKey, dispatch);
+      await Eth.sendToken(
+        state.address,
+        toAddress,
+        amount,
+        privateKey,
+        dispatch
+      );
     };
 
     return (
@@ -157,14 +224,16 @@ const Home: NextPage<{
 
     useEffect(() => {
       const interval = setInterval(async () => {
-        const transactionHistory = await Eth.getTransactionHistory(state.address);
+        const transactionHistory = await Eth.getTransactionHistory(
+          state.address
+        );
         setTransactionHistory(transactionHistory);
       }, 10000);
       return () => clearInterval(interval);
     }, []);
 
     return (
-      <Box title="Transaction History">
+      <Box title="Transaction History" className="transaction-history">
         <ScrollContainer flexDirection="column">
           {transactionHistory.map((transaction, index) => {
             return (
@@ -185,14 +254,14 @@ const Home: NextPage<{
     const [mintAmount, setMintAmount] = React.useState(0);
 
     const onClick = () => {
-      DispatchinApp(dispatch);
-    }
+      Eth.mintToken(state.address, mintAmount, privateKey, dispatch);
+    };
 
     const onClick2 = () => {
-      console.log('====================================');
+      console.log("====================================");
       console.log(state.address);
-      console.log('====================================');
-    }
+      console.log("====================================");
+    };
 
     useEffect(() => {
       const interval = setInterval(async () => {
@@ -203,15 +272,18 @@ const Home: NextPage<{
     }, []);
 
     return (
-      <Box title="Admin" >
+      <Box title="Admin">
         <h4>Token Total Supply: {totalSupply}</h4>
         <Input label="mint amount" onChange={setMintAmount} />
-        <h4>transaction Status: {state.status}</h4>
-        <Button2 text="mint" onClick={onClick} value={mintAmount.toString()}/>
-        <Button2 text="etes" onClick={onClick2} value={mintAmount.toString()}/>
+
+        <Button2 text="mint" onClick={onClick} value={mintAmount.toString()} />
+        <Button2 text="etes" onClick={onClick2} value={mintAmount.toString()} />
+        <Portal>
+          <h4 className="admin-status">Transaction Status: {statusIcon}</h4>
+        </Portal>
       </Box>
-    )
-  }
+    );
+  };
 
   return (
     <div className={styles.container}>

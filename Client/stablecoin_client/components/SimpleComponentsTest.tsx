@@ -3,7 +3,8 @@
 // which can create an event when clicked and can be disabled or not
 // which receives a function as a prop and can be called when clicked
 
-import React, { SetStateAction } from "react";
+import React, { SetStateAction, useEffect } from "react";
+import { useGlobalDispatch, useGlobalState } from "../context";
 
 export function Button(props: {
   text: string;
@@ -66,14 +67,19 @@ export function Input(props: {
 // dropdown component with a dropdown field
 // which can select an option from the dropdown
 // which can set the value of the dropdown
+// when an option is selected, visulize the selected option in the dropdown
 
 export function Dropdown(props: {
   options: string[];
-  onChange1?: (value: string) => void;
+  onChange1?: ((value: string) => void) | React.Dispatch<SetStateAction<any>>;
   onChange2?: (value: string) => void;
 }) {
+  const state = useGlobalState();
+  const dispatch = useGlobalDispatch();
+
   return (
     <select
+      value={"Select a Address"}
       onChange={(e) => {
         if (props.onChange1 && props.onChange2) {
           props.onChange1(e.target.value);
@@ -83,9 +89,13 @@ export function Dropdown(props: {
         }
       }}
     >
-      {props.options.map((option, _id) => {
+      {props.options.map((option) => {
         return (
-          <option key={_id} value={option}>
+          <option
+            key={option}
+            value={option}
+            selected={state.address === option ? true : false}
+          >
             {option}
           </option>
         );
@@ -97,7 +107,11 @@ export function Dropdown(props: {
 // box component with a title and a body
 // glassmorphism style css
 
-export function Box(props: { title?: string; children?: React.ReactNode }) {
+export function Box(props: {
+  title?: string;
+  children?: React.ReactNode;
+  className?: string;
+}) {
   return (
     <div
       style={{
@@ -117,7 +131,7 @@ export function Box(props: { title?: string; children?: React.ReactNode }) {
         alignItems: "center",
         transition: "all 0.3s ease-in-out",
       }}
-      className="box"
+      className={`box ${props.className ? props.className : ""}`}
     >
       {props.title && <h1>{props.title}</h1>}
       {props.children}
