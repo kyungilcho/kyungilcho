@@ -69,13 +69,17 @@ export function Input(props: {
 
 export function Dropdown(props: {
   options: string[];
-  onChange?: (value: string) => void;
+  onChange1?: (value: string) => void;
+  onChange2?: (value: string) => void;
 }) {
   return (
     <select
       onChange={(e) => {
-        if (props.onChange) {
-          props.onChange(e.target.value);
+        if (props.onChange1 && props.onChange2) {
+          props.onChange1(e.target.value);
+          props.onChange2(e.target.value);
+        } else if (props.onChange1){
+          props.onChange1(e.target.value);
         }
       }}
     >
@@ -140,7 +144,7 @@ export function Panel(props: { title: string; children?: React.ReactNode }) {
 export function Button2(props: {
   text: string;
   value?: string;
-  onClick?: (value: string | number) => void | Promise<void>;
+  onClick?: (value?: string | number| null) => void | Promise<void>;
 }) {
   return (
     <button

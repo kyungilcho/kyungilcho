@@ -4,22 +4,24 @@ type Color = 'red' | 'orange' | 'yellow';
 
 type State = {
     count: number;
-    text: string;
+    address: string;
     color: Color;
     isGood: boolean;
+    status: 'idle' | 'pending' | 'success' | 'failure';
 };
 
 type Action =
     | { type: 'SET_COUNT'; count: number }
-    | { type: 'SET_TEXT'; text: string }
+    | { type: 'SET_ADDRESS'; address: string }
     | { type: 'SET_COLOR'; color: Color }
-    | { type: 'TOGGLE_GOOD' };
+    | { type: 'TOGGLE_GOOD' }
+    | { type: 'SET_TRANSACTION_STATE'; status: State['status'] };
 
 
 type SimpleDispatch = Dispatch<Action>;
 
-const StateContext = createContext<State | null>(null);
-const DispatchContext = createContext<SimpleDispatch | null>(null);
+export const StateContext = createContext<State | null>(null);
+export const DispatchContext = createContext<SimpleDispatch | null>(null);
 
 function reducer(state: State, action: Action): State {
     switch (action.type) {
@@ -28,10 +30,10 @@ function reducer(state: State, action: Action): State {
                 ...state,
                 count: action.count,
             };
-        case 'SET_TEXT':
+        case 'SET_ADDRESS':
             return {
                 ...state,
-                text: action.text,
+                address: action.address,
             };
         case 'SET_COLOR':
             return {
@@ -43,6 +45,11 @@ function reducer(state: State, action: Action): State {
                 ...state,
                 isGood: !state.isGood,
             };
+        case 'SET_TRANSACTION_STATE':
+            return {
+                ...state,
+                status: action.status,
+            };
         default:
             throw new Error('Unhandled action');
     }
@@ -51,9 +58,10 @@ function reducer(state: State, action: Action): State {
 export function StateProvider({ children }: { children: React.ReactNode }) {
     const [state, dispatch] = useReducer(reducer, {
         count: 0,
-        text: 'hello',
+        address: "0x50bD41A6b4AF4ba8ED78f09912F363D26fd7d57C",
         color: 'red',
         isGood: true,
+        status: 'idle',
     });
     return (
         <StateContext.Provider value={state}>

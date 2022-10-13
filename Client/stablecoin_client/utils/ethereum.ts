@@ -3,6 +3,8 @@ import { abi } from "./constant/TokenABI";
 import { Transaction } from "ethereumjs-tx";
 import axios from "axios";
 import { getData } from "./API";
+import { isNullOrUndefined } from "./utils";
+
 
 const contractAddress = "0xDd9eB7952D6058Ee1eC4B194e6FEF08c824D6df0";
 const web3 = new Web3(
@@ -133,7 +135,7 @@ const createSignedRawTransaction = async (
       amount,
       data
     );
-    const tx = new Transaction(txObject, { chain: "ropsten" });
+    const tx = new Transaction(txObject, { chain: "goerli" });
 
     const privateKeyBuffer = Buffer.from(privateKey, "hex");
     tx.sign(privateKeyBuffer);
@@ -145,6 +147,31 @@ const createSignedRawTransaction = async (
   }
 };
 
+/* Send Signed Transaction */
+
+const sendSignedRawTransaction = async (raw: string, dispatch: any) => {
+    try {
+        const receipt = await web3.eth.sendSignedTransaction(raw)
+        .on("transactionHash", (hash: string) => {
+            console.log("hash", hash);
+            dispatch({ type: 'SET_TRANSACTION_STATE', status: 'pending'});
+        })
+        .on("receipt", (receipt: any) => {
+            console.log("receipt", receipt);
+            dispatch({ type: 'SET_TRANSACTION_STATE', status: 'success'});
+
+        })
+        .on("confirmation", (confirmationNumber: number, receipt: any) => {
+            console.log("confirmationNumber", confirmationNumber);
+        dispatch({ type: 'SET_TRANSACTION_STATE', status: 'idle'});
+        });        
+        return receipt;
+    } catch (err) {
+        console.log(err);
+        dispatch({ type: 'SET_TRANSACTION_STATE', status: 'failure'});
+    }
+}
+
 /* send Token from sender to receiver. 
 function receives sender address, receiver address, amount of token to be sent, and private key of a client as parameters 
 network setter common is created from ethereumcommonjs
@@ -155,15 +182,24 @@ const sendToken = async (
   senderAddress: string,
   receiverAddress: string,
   amount: number,
-  privateKey: string
+  privateKey: string,
+  dispatch: any
 ) => {
   try {
     const contract = new web3.eth.Contract(abi, contractAddress);
     console.log("amount", amount);
 
+    console.log('====================================');
+    console.log(privateKey);
+    console.log('====================================');
+
     const txData = contract.methods
       .transfer(receiverAddress, amount)
       .encodeABI();
+
+      console.log('====================================');
+      console.log(senderAddress);
+      console.log('====================================');
 
     const raw = await createSignedRawTransaction(
       senderAddress,
@@ -172,21 +208,48 @@ const sendToken = async (
       privateKey,
       txData
     );
-    const receipt = await web3.eth
-      .sendSignedTransaction(raw)
-      .on("transactionHash", (hash: any) => {
-        console.log("hash", hash);
-      })
-      .on("receipt", (receipt: any) => {
-        console.log("receipt", receipt);
-      })
-      .on("confirmation", (confirmationNumber: any, receipt: any) => {
-        console.log("confirmation: " + confirmationNumber);
-      });
-    return receipt;
+
+    
+    if(isNullOrUndefined(raw) === true) throw new Error("raw is null or undefined");
+    else {
+        const receipt = await sendSignedRawTransaction(raw!, dispatch);
+        return receipt;
+    }
+
   } catch (err) {
     console.log(err);
   }
+};
+
+/* mint Token */ 
+
+const mintToken = async (
+    senderAddress: string,
+    amount: number,
+    privateKey: string
+    ) => {
+    try {
+        const contract = new web3.eth.Contract(abi, contractAddress);
+        console.log("amount", amount);
+
+        const txData = contract.methods.issue(amount)
+
+        const raw = await createSignedRawTransaction(
+        senderAddress,
+        contractAddress,
+        0,
+        privateKey,
+        txData
+        );
+
+        if(!isNullOrUndefined(raw) === true) throw new Error("raw is null or undefined");
+        else {
+            const receipt = await sendSignedRawTransaction(raw!);
+            return receipt;
+        }
+    } catch (err) {
+        console.log(err);
+    }
 };
 
 /* get latest block number */
@@ -233,6 +296,16 @@ const getTransactionHistory = async (address: string) => {
   }
 };
 
+const getTotalSupply = async () => {
+    try {
+        const contract = new web3.eth.Contract(abi, contractAddress);
+        const totalSupply = await contract.methods.totalSupply().call();
+        return totalSupply;
+    } catch (err) {
+        console.log(err);
+    }
+}
+
 // export all functions as good.method
 const Eth = {
   getBalanceofToken,
@@ -242,6 +315,8 @@ const Eth = {
   getLatestBlockNumber,
   getBlockDetails,
   getTransactionHistory,
+  getTotalSupply,
+  mintToken,
 };
 
 export default Eth;
