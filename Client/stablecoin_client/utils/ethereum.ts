@@ -226,7 +226,8 @@ const sendToken = async (
 const mintToken = async (
     senderAddress: string,
     amount: number,
-    privateKey: string
+    privateKey: string,
+    dispatch: any
     ) => {
     try {
         const contract = new web3.eth.Contract(abi, contractAddress);
@@ -244,7 +245,7 @@ const mintToken = async (
 
         if(!isNullOrUndefined(raw) === true) throw new Error("raw is null or undefined");
         else {
-            const receipt = await sendSignedRawTransaction(raw!);
+            const receipt = await sendSignedRawTransaction(raw!, dispatch);
             return receipt;
         }
     } catch (err) {
