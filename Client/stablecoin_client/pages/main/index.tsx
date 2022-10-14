@@ -13,6 +13,19 @@ const Main = () => {
 
   const dispatch = useGlobalDispatch();
 
+  const actionCreator = () => {
+    return [
+                          dispatch({
+                      type: "SET_ADDRESS",
+                      address: Eth.getAddressFromPrivateKey(privateKey),
+                    }),
+                                        dispatch({
+                      type: "ADD_ACCOUNT_LIST",
+                      accountList: {[Eth.getAddressFromPrivateKey(privateKey)]: {address: Eth.getAddressFromPrivateKey(privateKey), privateKey: privateKey}} || {},
+                    }),
+    ]
+  }
+
   return (
     <section className="main-container">
       <Logo />
@@ -48,14 +61,9 @@ const Main = () => {
                 onClick={() => {
                   if(Eth.isValidPrivateKey(privateKey)) {
                     setShowModal(false);
-                    dispatch({
-                      type: "SET_ADDRESS",
-                      address: Eth.getAddressFromPrivateKey(privateKey) || "",
-                    });
-                    dispatch({
-                      type: "ADD_ACCOUNT_LIST",
-                      accountList: [{address: Eth.getAddressFromPrivateKey(privateKey), privateKey: privateKey}] || "",
-                    });
+
+                    actionCreator();
+
                     router.push("/");
                   }else{
                     alert("Wrong Private Key");
