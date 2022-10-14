@@ -1,9 +1,8 @@
 import { Logo } from "../../components/MainPageComponents";
-import { Button2 } from "../../components/SimpleComponents";
+import { Button2, Input } from "../../components/SimpleComponents";
 import router from "next/router";
 import { Modal } from "../../components/Modal";
 import { useState } from "react";
-import { Input } from "../../components/SimpleComponents";
 import Eth from "../../utils/ethereum";
 import { useGlobalDispatch } from "../../context";
 
@@ -15,14 +14,18 @@ const Main = () => {
 
   const actionCreator = () => {
     return [
-                          dispatch({
-                      type: "SET_ADDRESS",
-                      address: Eth.getAddressFromPrivateKey(privateKey),
-                    }),
-                                        dispatch({
-                      type: "ADD_ACCOUNT_LIST",
-                      accountList: {[Eth.getAddressFromPrivateKey(privateKey)]: {address: Eth.getAddressFromPrivateKey(privateKey), privateKey: privateKey}} || {},
-                    }),
+              dispatch({
+                type: "SET_ADDRESS",
+                address: Eth.getAddressFromPrivateKey(privateKey) as string,
+              }),
+              dispatch({
+                type: "SET_PRIVATEKEY",
+                privateKey: privateKey,
+              }),
+              dispatch({
+                type: "ADD_ACCOUNT_LIST",
+                accountList: {[Eth.getAddressFromPrivateKey(privateKey) as string]: {address: Eth.getAddressFromPrivateKey(privateKey), privateKey: privateKey}} || {},
+              }),
     ]
   }
 

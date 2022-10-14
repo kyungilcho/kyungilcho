@@ -2,21 +2,19 @@ import type { NextPage } from "next";
 import styles from "../styles/Home.module.css";
 import {
   Box,
-  Button,
   Button2,
   Dropdown,
-  Panel,
   Container,
   Input,
   ScrollContainer,
   Card,
 } from "../components/SimpleComponents";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Eth from "../utils/ethereum";
 import { useBalance } from "../utils/hooks/EthereumHooks";
 import { useGlobalDispatch, useGlobalState } from "../context";
 import useIconChange from "../utils/hooks/useIconChange";
-import { Portal } from "../utils/Portal";
+import { Portal } from "../components/Portal";
 
 const Home: NextPage<{
   InitialBlockNumber: number;
@@ -65,7 +63,7 @@ const Home: NextPage<{
     const [toAddress, setToAddress] = React.useState("");
     const [amount, setAmount] = React.useState(0);
 
-    const clickChecker = async () => {
+    const onClickHandler = async () => {
       await Eth.sendToken(
         state.address,
         toAddress,
@@ -90,7 +88,7 @@ const Home: NextPage<{
               onChange={setAmount}
             />
           </Container>
-          <Button2 text="Send" onClick={clickChecker} value={toAddress} />
+          <Button2 text="Send" onClick={onClickHandler} value={toAddress} />
         </Container>
       </Box>
     );
@@ -167,11 +165,11 @@ const Home: NextPage<{
       const privateKey = Eth.generatePrivateKey();
       if(state.address === "") {
         return [
-          dispatch({type: "SET_PRIVATEKEY", privateKey: privateKey}),
-          dispatch({ type: "SET_ADDRESS", address: Eth.getAddressFromPrivateKey(privateKey) }),
+          dispatch({type: "SET_PRIVATEKEY", privateKey: privateKey!}),
+          dispatch({ type: "SET_ADDRESS", address: Eth.getAddressFromPrivateKey(privateKey!) as string }),
           dispatch({
             type: "ADD_ACCOUNT_LIST", 
-            accountList: {[Eth.getAddressFromPrivateKey(privateKey!)]: {
+            accountList: {[Eth.getAddressFromPrivateKey(privateKey!) as string]: {
             address: Eth.getAddressFromPrivateKey(privateKey!),
             privateKey: privateKey
           }}
@@ -180,7 +178,7 @@ const Home: NextPage<{
       }
       dispatch({
         type: "ADD_ACCOUNT_LIST", 
-        accountList: {[Eth.getAddressFromPrivateKey(privateKey!)]: {
+        accountList: {[Eth.getAddressFromPrivateKey(privateKey!) as string]: {
           address: Eth.getAddressFromPrivateKey(privateKey!),
           privateKey: privateKey
         }}
@@ -230,7 +228,7 @@ const Home: NextPage<{
 
         <Container flexDirection="column" className="right">
           <AdminBox />
-          <TransactionHistoryBox address={state.address} />
+          <TransactionHistoryBox />
         </Container>
       </Container>
     </div>

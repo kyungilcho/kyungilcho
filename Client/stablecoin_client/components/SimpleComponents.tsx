@@ -161,7 +161,7 @@ export function Panel(props: { title: string; children?: React.ReactNode }) {
 export function Button2(props: {
   text: string;
   value?: string;
-  onClick?: (value?: string | number | null) => void | Promise<void>;
+  onClick?: (value?: string | number | null) => any;
   className?: string;
 }) {
   return (
@@ -196,14 +196,12 @@ export function Container(props: {
   children?: React.ReactNode;
   className?: string;
 }) {
-  const flexDirection = props.flexDirection;
-
   return (
     <div
       style={{
         display: "flex",
         width: "100%",
-        flexDirection: flexDirection ? flexDirection : "row",
+        flexDirection: props.flexDirection ? props.flexDirection : "row",
         marginRight: "20px",
       }}
       className={`container ${props.className ? props.className : ""}`}
