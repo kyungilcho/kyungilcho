@@ -90,6 +90,9 @@ button {
 .box.transaction-history {
   overflow: hidden;
 }
+.box.admin {
+  flex-basis: 57%;
+}
 
 .box__address {
   display: flex;
@@ -161,10 +164,8 @@ button {
 }
 
 header {
-  position: fixed;
-  top: 0;
+  margin-bottom: 1rem;
   transition: 0.5s all ease;
-  height: 5rem;
   width: 100%;
   background-color: transparent;
   /* box-shadow: none|h-offset v-offset blur spread color |inset|initial|inherit; */
