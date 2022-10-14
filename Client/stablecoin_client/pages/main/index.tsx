@@ -1,5 +1,5 @@
 import { Logo } from "../../components/MainPageComponents";
-import { Button2 } from "../../components/SimpleComponentsTest";
+import { Button2 } from "../../components/SimpleComponents";
 import router from "next/router";
 
 const Main = () => {
