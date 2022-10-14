@@ -5,7 +5,8 @@
 
 import React, { SetStateAction, useEffect } from "react";
 import { useGlobalDispatch, useGlobalState } from "../context";
-
+import { MdCallReceived } from "react-icons/md";
+import { FiSend } from "react-icons/fi";
 export function Button(props: {
   text: string;
   disabled?: boolean;
@@ -236,4 +237,43 @@ export function ScrollContainer(props: {
   children?: React.ReactNode;
 }) {
   return <div className="container scroll-box">{props.children}</div>;
+}
+
+export function Card(props: {
+  type?: string;
+  txValue: {
+    from: string;
+    to: string;
+    value: number;
+  };
+}) {
+  switch (props.type) {
+    case "receive":
+      return (
+        <>
+          <div className="card-elem">
+            <MdCallReceived className="card-icon" />
+          </div>
+          <div>
+            <h4>{`from: ${props.txValue.from}`}</h4>
+            <h4>{`value: ${props.txValue.value}`}</h4>
+          </div>
+        </>
+      );
+
+    case "send":
+      return (
+        <>
+          <div className="card-elem">
+            <FiSend className="card-icon" />
+          </div>
+          <div>
+            <h4>{`to: ${props.txValue.to}`}</h4>
+            <h4>{`value: ${props.txValue.value}`}</h4>
+          </div>
+        </>
+      );
+    default:
+      return <></>;
+  }
 }

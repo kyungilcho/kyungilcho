@@ -127,8 +127,26 @@ button {
   padding: 0.6rem;
   margin-top: 1rem;
   width: 100%;
+  display: flex;
+  flex-direction: row;
 }
-
+.card-elem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+.card-icon {
+  width: 42px;
+  height: 42px;
+  color: #bae1ff;
+  padding: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  backdrop-filter: blur(20%);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
 .container.scroll-box {
   overflow-y: scroll;
   overflow-x: hidden;

@@ -9,6 +9,7 @@ import {
   Container,
   Input,
   ScrollContainer,
+  Card,
 } from "../components/SimpleComponents";
 import React, { useEffect, useState } from "react";
 import Eth from "../utils/ethereum";
@@ -131,15 +132,18 @@ const Home: NextPage<{
     return (
       <Box title="Transaction History" className="transaction-history">
         <ScrollContainer flexDirection="column">
-          {transactionHistory.map((transaction, index) => {
-            return (
-              <Container key={index} flexDirection="column" className="card">
-                <h4>{`from: ${transaction.returnValues.from}`}</h4>
-                <h4>{`to: ${transaction.returnValues.to}`}</h4>
-                <h4>{`value: ${transaction.returnValues.value}`}</h4>
-              </Container>
-            );
-          })}
+          {transactionHistory &&
+            transactionHistory.map((transaction, index) => {
+              return (
+                <Container key={index} className="card">
+                  {state.address === transaction.returnValues.from ? (
+                    <Card type="receive" txValue={transaction.returnValues} />
+                  ) : (
+                    <Card type="send" txValue={transaction.returnValues} />
+                  )}
+                </Container>
+              );
+            })}
         </ScrollContainer>
       </Box>
     );
