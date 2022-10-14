@@ -3,20 +3,21 @@ import React, {useReducer, useContext, createContext, Dispatch} from 'react';
 type Color = 'red' | 'orange' | 'yellow';
 
 type State = {
-    count: number;
+    privateKey: string;
     address: string;
     color: Color;
     isGood: boolean;
     status: 'idle' | 'pending' | 'success' | 'failure';
+    accountList: object;
 };
 
 type Action =
-    | { type: 'SET_COUNT'; count: number }
+    | { type: 'SET_PRIVATEKEY'; privateKey: string }
     | { type: 'SET_ADDRESS'; address: string }
     | { type: 'SET_COLOR'; color: Color }
     | { type: 'TOGGLE_GOOD' }
-    | { type: 'SET_TRANSACTION_STATE'; status: State['status'] };
-
+    | { type: 'SET_TRANSACTION_STATE'; status: State['status'] }
+    | { type: 'ADD_ACCOUNT_LIST'; accountList: object };
 
 type SimpleDispatch = Dispatch<Action>;
 
@@ -25,10 +26,10 @@ export const DispatchContext = createContext<SimpleDispatch | null>(null);
 
 function reducer(state: State, action: Action): State {
     switch (action.type) {
-        case 'SET_COUNT':
+        case 'SET_PRIVATEKEY':
             return {
                 ...state,
-                count: action.count,
+                privateKey: action.privateKey,
             };
         case 'SET_ADDRESS':
             return {
@@ -50,6 +51,11 @@ function reducer(state: State, action: Action): State {
                 ...state,
                 status: action.status,
             };
+        case 'ADD_ACCOUNT_LIST':
+            return {
+                ...state,
+                accountList: Object.assign({},state.accountList, action.accountList),
+            };
         default:
             throw new Error('Unhandled action');
     }
@@ -57,11 +63,12 @@ function reducer(state: State, action: Action): State {
 
 export function StateProvider({ children }: { children: React.ReactNode }) {
     const [state, dispatch] = useReducer(reducer, {
-        count: 0,
-        address: "0x50bD41A6b4AF4ba8ED78f09912F363D26fd7d57C",
+        privateKey: '',
+        address: "",
         color: 'red',
         isGood: true,
         status: 'idle',
+        accountList: {},
     });
     return (
         <StateContext.Provider value={state}>

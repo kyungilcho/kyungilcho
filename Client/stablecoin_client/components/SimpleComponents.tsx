@@ -30,7 +30,7 @@ export function Button(props: {
 // which can be used to check the validation of the input and change the color of the input
 
 export function Input(props: {
-  label: string;
+  label?: string;
   placeholder?: string;
   disabled?: boolean;
   onChange?: ((value: string) => void) | React.Dispatch<SetStateAction<any>>;
@@ -70,7 +70,7 @@ export function Input(props: {
 // when an option is selected, visulize the selected option in the dropdown
 
 export function Dropdown(props: {
-  options: string[];
+  options: object;
   onChange1?: ((value: string) => void) | React.Dispatch<SetStateAction<any>>;
   onChange2?: (value: string) => void;
 }) {
@@ -79,24 +79,26 @@ export function Dropdown(props: {
 
   return (
     <select
-      value={"Select a Address"}
+      value={state.address}
       onChange={(e) => {
         if (props.onChange1 && props.onChange2) {
           props.onChange1(e.target.value);
           props.onChange2(e.target.value);
         } else if (props.onChange1) {
+
           props.onChange1(e.target.value);
         }
       }}
     >
-      {props.options.map((option) => {
+      {Object.keys(props.options).map((value, _id) => {
+          console.log("option", value);
         return (
           <option
-            key={option}
-            value={option}
-            selected={state.address === option ? true : false}
+            key={_id}
+            value={value}
+            // defaultValue={state.address === option ? true : false}
           >
-            {option}
+            {value}
           </option>
         );
       })}

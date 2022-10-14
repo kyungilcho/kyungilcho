@@ -10,69 +10,20 @@ import {
   Input,
   ScrollContainer,
 } from "../components/SimpleComponents";
-import Axios from "axios";
 import React, { useEffect, useState } from "react";
 import Eth from "../utils/ethereum";
 import { useBalance } from "../utils/hooks/EthereumHooks";
 import { useGlobalDispatch, useGlobalState } from "../context";
-import { createPortal } from "react-dom";
-import { PortalProps } from "@mui/material";
-import { AiFillCheckCircle, AiFillMinusCircle } from "react-icons/ai";
-import { GiBackwardTime } from "react-icons/gi";
 import useIconChange from "../utils/hooks/useIconChange";
 import { Portal } from "../utils/Portal";
 
-const stringArrary = [
-  "0x50bD41A6b4AF4ba8ED78f09912F363D26fd7d57C",
-  "0x1eD14542bFDE8d84D82dfA8B43EC12d2c510361C",
-  "c",
-  "d",
-  "e",
-  "f",
-  "g",
-  "h",
-  "i",
-  "j",
-  "k",
-  "l",
-  "m",
-  "n",
-  "o",
-  "p",
-  "q",
-  "r",
-  "s",
-  "t",
-  "u",
-  "v",
-  "w",
-  "x",
-  "y",
-  "z",
-  "0",
-  "1",
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-];
-const privateKeyArray = [
-  "8a9214c740bb26055a37789dc3ff31b13794b990f29822e0733e60c3fd2dde89",
-  "91e3edbed9f7f6dd154543920ee3b7e93ad3e964e18f1086156789c759575461",
-];
-
 const Home: NextPage<{
-  ethBalance: number;
   InitialBlockNumber: number;
-}> = ({ ethBalance, InitialBlockNumber }): JSX.Element => {
+  totalTokenSupply: number;
+}> = ({ InitialBlockNumber, totalTokenSupply }): JSX.Element => {
+
   const state = useGlobalState();
   const dispatch = useGlobalDispatch();
-
-  const [privateKey, setPrivateKey] = React.useState(privateKeyArray[0]);
 
   const { statusIcon } = useIconChange(state.status);
 
@@ -81,17 +32,17 @@ const Home: NextPage<{
     const [tokenBalance, dispatchToken] = useBalance(state.address, "token");
 
     const addressChange = (value: any) => {
-      console.log("====================================");
-      console.log(value);
-      console.log("====================================");
-      dispatch({ type: "SET_ADDRESS", address: value });
+      return [
+        dispatch({type: "SET_PRIVATEKEY", privateKey: state.accountList[value].privateKey || ""}),
+        dispatch({ type: "SET_ADDRESS", address: value }),
+      ];
     };
 
     return (
       <Box>
         <div className="box__address">
           <h3>Address: {state.address}</h3>
-          <Dropdown options={stringArrary} onChange1={addressChange} />
+          <Dropdown options={state.accountList} onChange1={addressChange} />
         </div>
         <div className="box__info">
           <h2>{`ether: ${EthBalance ? EthBalance.toFixed(5) : 0}`}</h2>
@@ -118,7 +69,7 @@ const Home: NextPage<{
         state.address,
         toAddress,
         amount,
-        privateKey,
+        state.privateKey,
         dispatch
       );
     };
@@ -172,7 +123,7 @@ const Home: NextPage<{
         const transactionHistory = await Eth.getTransactionHistory(
           state.address
         );
-        setTransactionHistory(transactionHistory);
+        if(transactionHistory) setTransactionHistory(transactionHistory)
       }, 10000);
       return () => clearInterval(interval);
     }, []);
@@ -195,17 +146,41 @@ const Home: NextPage<{
   };
 
   const AdminBox = () => {
-    const [totalSupply, setTotalSupply] = React.useState(0);
+    const [totalSupply, setTotalSupply] = React.useState(totalTokenSupply);
     const [mintAmount, setMintAmount] = React.useState(0);
 
     const onClick = () => {
-      Eth.mintToken(state.address, mintAmount, privateKey, dispatch);
+      Eth.mintToken(state.address, mintAmount, state.privateKey, dispatch);
     };
 
     const onClick2 = () => {
       console.log("====================================");
-      console.log(state.address);
+      console.log(state);
       console.log("====================================");
+    };
+
+    const onClick3 = () => {
+      const privateKey = Eth.generatePrivateKey();
+      if(state.address === "") {
+        return [
+          dispatch({type: "SET_PRIVATEKEY", privateKey: privateKey}),
+          dispatch({ type: "SET_ADDRESS", address: Eth.getAddressFromPrivateKey(privateKey) }),
+          dispatch({
+            type: "ADD_ACCOUNT_LIST", 
+            accountList: {[Eth.getAddressFromPrivateKey(privateKey!)]: {
+            address: Eth.getAddressFromPrivateKey(privateKey!),
+            privateKey: privateKey
+          }}
+        })
+        ]
+      }
+      dispatch({
+        type: "ADD_ACCOUNT_LIST", 
+        accountList: {[Eth.getAddressFromPrivateKey(privateKey!)]: {
+          address: Eth.getAddressFromPrivateKey(privateKey!),
+          privateKey: privateKey
+        }}
+      });
     };
 
     useEffect(() => {
@@ -218,6 +193,7 @@ const Home: NextPage<{
 
     return (
       <Box title="Admin" className="admin">
+        <Button2 text="Add Account" onClick={onClick3} />
         <h4>Token Total Supply: {totalSupply}</h4>
         <Input label="mint amount" onChange={setMintAmount} />
         <div className="admin__button-container">
@@ -258,15 +234,15 @@ const Home: NextPage<{
 };
 
 export const getStaticProps = async () => {
-  const ethBalance = await Eth.getEtherBalance(stringArrary[0]);
-  const tokenBalance = await Eth.getBalanceofToken(stringArrary[0]);
+
   const blockNumber = await Eth.getLatestBlockNumber();
+  const totalTokenSupply = await Eth.getTotalSupply();
 
   return {
     props: {
-      ethBalance: ethBalance ? parseFloat(ethBalance).toFixed(5) : 0,
-      tokenBalance: tokenBalance ? tokenBalance : 0,
+
       InitialBlockNumber: blockNumber,
+      totalTokenSupply: totalTokenSupply ? totalTokenSupply : 0,
     },
   };
 };

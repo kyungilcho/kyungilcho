@@ -307,6 +307,35 @@ const getTotalSupply = async () => {
     }
 }
 
+// check if private key is valid
+
+const isValidPrivateKey = (privateKey: string) => {
+    try {
+        const account = web3.eth.accounts.privateKeyToAccount(privateKey);
+        return account;
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+const getAddressFromPrivateKey = (privateKey: string) => {
+    try {
+        const account = web3.eth.accounts.privateKeyToAccount(privateKey);
+        return account.address;
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+const generatePrivateKey = () => {
+    try {
+        const account = web3.eth.accounts.create();
+        return account.privateKey;
+    } catch (err) {
+        console.log(err);
+    }
+}
+
 // export all functions as good.method
 const Eth = {
   getBalanceofToken,
@@ -318,6 +347,9 @@ const Eth = {
   getTransactionHistory,
   getTotalSupply,
   mintToken,
+  isValidPrivateKey,
+    getAddressFromPrivateKey,
+    generatePrivateKey,
 };
 
 export default Eth;
