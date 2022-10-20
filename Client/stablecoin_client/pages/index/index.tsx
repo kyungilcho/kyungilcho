@@ -16,9 +16,7 @@ import { StateContext, useGlobalDispatch, useGlobalState } from "../context";
 import useIconChange from "../utils/hooks/useIconChange";
 import { Portal } from "../components/Portal";
 import { useAccountListState, useAccountListDispatch } from "../context/AccountList";
-import TransactionHistoryBox from "./index/TransactionHistoryBox";
-import UserInfoBox from "./index/UserInfoBox";
-import SendTokenBox from "./index/SendTokenBox";
+import TransactionHistoryBox from "./TransactionHistoryBox";
 
 const Home: NextPage<{
   InitialBlockNumber: number;
@@ -34,42 +32,75 @@ const Home: NextPage<{
   const { statusIcon } = useIconChange(state.status);
 
   console.log('start');
+  
 
-  // const SendTokenBox = () => {
-  //   const [toAddress, setToAddress] = React.useState("");
-  //   const [amount, setAmount] = React.useState(0);
+  const UserInfoBox = () => {
+    const [EthBalance, dispatch1] = useBalance(state.address, "ether");
+    const [tokenBalance, dispatchToken] = useBalance(state.address, "token");
 
-  //   const onClickHandler = async () => {
-  //     await Eth.sendToken(
-  //       state.address,
-  //       toAddress,
-  //       amount,
-  //       state.privateKey,
-  //       dispatch
-  //     );
-  //     return [setToAddress(""), setAmount(0)];
-  //   };
+    const addressChange = (value: any) => {
+      return [
+        dispatch({type: "SET_PRIVATEKEY", privateKey: accountListState.accountList[value].privateKey || ""}),
+        dispatch({ type: "SET_ADDRESS", address: value }),
+      ];
+    };
 
-  //   return (
-  //     <Box title="Send Token">
-  //       <Container flexDirection="row">
-  //         <Container flexDirection="column">
-  //           <Input
-  //             label="to address"
-  //             placeholder="to address"
-  //             onChange={setToAddress}
-  //           />
-  //           <Input
-  //             label="amount"
-  //             placeholder="0.1001 cho"
-  //             onChange={setAmount}
-  //           />
-  //         </Container>
-  //         <Button2 text="Send" onClick={onClickHandler} value={toAddress} />
-  //       </Container>
-  //     </Box>
-  //   );
-  // };
+    return (
+      <Box>
+        <div className="box__address">
+          <h3>Address: {state.address}</h3>
+          <Dropdown options={accountListState.accountList} onChange1={addressChange} />
+        </div>
+        <div className="box__info">
+          <h2>{`ether: ${EthBalance ? EthBalance.toFixed(5) : 0}`}</h2>
+          <h2>{`token: ${tokenBalance ? tokenBalance : 0}`}</h2>
+
+          <Button2
+            text="token balance check"
+            value="good"
+            onClick={() => {
+              console.log();
+            }}
+          />
+        </div>
+      </Box>
+    );
+  };
+
+  const SendTokenBox = () => {
+    const [toAddress, setToAddress] = React.useState("");
+    const [amount, setAmount] = React.useState(0);
+
+    const onClickHandler = async () => {
+      await Eth.sendToken(
+        state.address,
+        toAddress,
+        amount,
+        state.privateKey,
+        dispatch
+      );
+    };
+
+    return (
+      <Box title="Send Token">
+        <Container flexDirection="row">
+          <Container flexDirection="column">
+            <Input
+              label="to address"
+              placeholder="to address"
+              onChange={setToAddress}
+            />
+            <Input
+              label="amount"
+              placeholder="0.1001 cho"
+              onChange={setAmount}
+            />
+          </Container>
+          <Button2 text="Send" onClick={onClickHandler} value={toAddress} />
+        </Container>
+      </Box>
+    );
+  };
 
   const BlockChainInfoBox = () => {
     const [blockNumber, setBlockNumber] = React.useState(InitialBlockNumber);
@@ -134,7 +165,7 @@ const Home: NextPage<{
         setTotalSupply(totalSupply ? totalSupply : 0);
       }, 10000);
       return () => clearInterval(interval);
-    }, []);
+    }, [setTotalSupply]);
 
     return (
       <Box title="Admin" className="admin">
@@ -164,8 +195,8 @@ const Home: NextPage<{
     <div className={styles.container}>
       <Container flexDirection="row" className="container-box">
         <Container flexDirection="column" className="left">
-          <UserInfoBox address={state.address} dispatch={dispatch} accountList={accountListState.accountList} />
-          <SendTokenBox senderAddress={state.address} privateKey={state.privateKey} dispatch={dispatch} />
+          <UserInfoBox />
+          <SendTokenBox />
           <BlockChainInfoBox />
         </Container>
 

@@ -5,6 +5,7 @@ import { Modal } from "../../components/Modal";
 import { useState } from "react";
 import Eth from "../../utils/ethereum";
 import { useGlobalDispatch } from "../../context";
+import { useAccountListDispatch } from "../../context/AccountList";
 
 const Main = () => {
   const [showModal, setShowModal] = useState(false);
@@ -12,6 +13,7 @@ const Main = () => {
   const [privateKey, setPrivateKey] = useState("");
 
   const dispatch = useGlobalDispatch();
+  const accountListDispatch = useAccountListDispatch();
 
   const actionCreator = () => {
     return [
@@ -23,7 +25,7 @@ const Main = () => {
                 type: "SET_PRIVATEKEY",
                 privateKey: privateKey,
               }),
-              dispatch({
+              accountListDispatch({
                 type: "ADD_ACCOUNT_LIST",
                 accountList: {[Eth.getAddressFromPrivateKey(privateKey) as string]: {address: Eth.getAddressFromPrivateKey(privateKey), privateKey: privateKey}} || {},
               }),

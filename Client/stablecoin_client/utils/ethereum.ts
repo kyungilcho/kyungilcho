@@ -159,7 +159,7 @@ const sendSignedRawTransaction = async (raw: string, dispatch: any) => {
         .on("receipt", (receipt: any) => {
             console.log("receipt", receipt);
             dispatch({ type: 'SET_TRANSACTION_STATE', status: 'success'});
-
+            alert("Transaction Success");
         })
         .on("confirmation", (confirmationNumber: number, receipt: any) => {
             console.log("confirmationNumber", confirmationNumber);
@@ -231,19 +231,19 @@ const mintToken = async (
     ) => {
     try {
         const contract = new web3.eth.Contract(abi, contractAddress);
-        console.log("amount", amount);
 
-        const txData = contract.methods.issue(amount)
+        const txData = contract.methods.issue(amount).encodeABI();
 
         const raw = await createSignedRawTransaction(
-        senderAddress,
-        contractAddress,
-        0,
-        privateKey,
-        txData
+            senderAddress,
+            contractAddress,
+            0,
+            privateKey,
+            txData
         );
 
-        if(!isNullOrUndefined(raw) === true) throw new Error("raw is null or undefined");
+        if(isNullOrUndefined(raw) === true) throw new Error("raw is null or undefined");
+
         else {
             const receipt = await sendSignedRawTransaction(raw!, dispatch);
             return receipt;
@@ -284,7 +284,6 @@ use Promise.all to get all transactions
 
 const getTransactionHistory = async (address: string) => {
   try {
-    console.log("hi");
     const history = await getData(
       "http://192.168.156.162:5555/transaction/history",
       "address",

@@ -8,7 +8,7 @@ type State = {
     color: Color;
     isGood: boolean;
     status: 'idle' | 'pending' | 'success' | 'failure';
-    accountList: object;
+    // accountList: object;
 };
 
 type Action =
@@ -17,7 +17,7 @@ type Action =
     | { type: 'SET_COLOR'; color: Color }
     | { type: 'TOGGLE_GOOD' }
     | { type: 'SET_TRANSACTION_STATE'; status: State['status'] }
-    | { type: 'ADD_ACCOUNT_LIST'; accountList: object };
+    // | { type: 'ADD_ACCOUNT_LIST'; accountList: object };
 
 type SimpleDispatch = Dispatch<Action>;
 
@@ -51,11 +51,11 @@ function reducer(state: State, action: Action): State {
                 ...state,
                 status: action.status,
             };
-        case 'ADD_ACCOUNT_LIST':
-            return {
-                ...state,
-                accountList: Object.assign({},state.accountList, action.accountList),
-            };
+        // case 'ADD_ACCOUNT_LIST':
+        //     return {
+        //         ...state,
+        //         accountList: Object.assign({},state.accountList, action.accountList),
+        //     };
         default:
             throw new Error('Unhandled action');
     }
@@ -68,7 +68,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
         color: 'red',
         isGood: true,
         status: 'idle',
-        accountList: {},
+        // accountList: {},
     });
     return (
         <StateContext.Provider value={state}>

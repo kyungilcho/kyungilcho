@@ -92,7 +92,6 @@ export function Dropdown(props: {
       }}
     >
       {Object.keys(props.options).map((value, _id) => {
-          console.log("option", value);
         return (
           <option
             key={_id}
@@ -245,6 +244,7 @@ export function Card(props: {
     value: number;
   };
 }) {
+
   switch (props.type) {
     case "receive":
       return (
