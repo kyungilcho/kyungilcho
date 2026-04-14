@@ -1,7 +1,7 @@
 <h1 align="center">Hey there 👋 I'm Kyungil</h1>
 
 <p align="center">
-  <em>Mobile Engineering Lead · Flutter enthusiast · Rust curious</em>
+  <em>Mobile Engineer · Flutter enthusiast · Rust curious</em>
 </p>
 
 <p align="center">
